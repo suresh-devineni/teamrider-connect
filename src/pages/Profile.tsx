@@ -1,13 +1,11 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/lib/supabase";
-import { BottomNav } from "@/components/BottomNav";
 import { Header } from "@/components/Header";
-import { LogOut, Settings, User as UserIcon } from "lucide-react";
+import { User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
 
 interface Profile {
@@ -42,7 +40,6 @@ const Profile = () => {
         if (data) {
           setProfile(data as Profile);
         } else {
-          // If no profile exists, create one
           const { data: newData, error: createError } = await supabase
             .from('profiles')
             .insert([
@@ -67,11 +64,6 @@ const Profile = () => {
     fetchProfile();
   }, [navigate]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/");
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <Header />
@@ -94,29 +86,7 @@ const Profile = () => {
             </div>
           </div>
         </Card>
-
-        <div className="space-y-4">
-          <Button
-            variant="outline"
-            className="w-full justify-start"
-            onClick={() => navigate("/settings")}
-          >
-            <Settings className="mr-2 h-4 w-4" />
-            Settings
-          </Button>
-          
-          <Button
-            variant="outline"
-            className="w-full justify-start text-red-600 hover:text-red-700"
-            onClick={handleLogout}
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </Button>
-        </div>
       </main>
-
-      <BottomNav />
     </div>
   );
 };
