@@ -29,14 +29,35 @@ export const RideRequestForm = () => {
         return;
       }
 
-      const { error } = await supabase.from('rides').insert({
-        ...formData,
-        driver_id: user.id,
-        driver_name: user.user_metadata.full_name || 'Anonymous',
-        seats_available: formData.seats_requested
-      });
+      // First create the ride entry
+      const { data: ride, error: rideError } = await supabase
+        .from('rides')
+        .insert({
+          from_location: formData.from_location,
+          to_location: formData.to_location,
+          departure_date: formData.departure_date,
+          departure_time: formData.departure_time,
+          seats_available: formData.seats_requested,
+          driver_id: user.id,
+          driver_name: user.user_metadata.full_name || 'Anonymous'
+        })
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (rideError) throw rideError;
+
+      // Then create the ride request
+      const { error: requestError } = await supabase
+        .from('ride_requests')
+        .insert({
+          ride_id: ride.id,
+          requester_id: user.id,
+          requester_name: user.user_metadata.full_name || 'Anonymous',
+          seats_requested: formData.seats_requested,
+          status: 'pending'
+        });
+
+      if (requestError) throw requestError;
 
       toast.success('Ride request created successfully!');
       setFormData({
