@@ -6,17 +6,26 @@ import { supabase } from "@/lib/supabase";
 const libraries: ("places")[] = ["places"];
 
 export const useMapsAutocomplete = () => {
-  const [googleMapsApiKey, setGoogleMapsApiKey] = useState<string>("");
+  const [apiKey, setApiKey] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchApiKey = async () => {
-      const { data, error } = await supabase.rpc('get_secret', {
-        secret_name: 'GOOGLE_MAPS_API_KEY'
-      });
-      
-      if (!error && data) {
-        const parsedData = JSON.parse(data);
-        setGoogleMapsApiKey(parsedData.secret || "");
+      try {
+        const { data, error } = await supabase.rpc('get_secret', {
+          secret_name: 'GOOGLE_MAPS_API_KEY'
+        });
+        
+        if (error) {
+          console.error('Error fetching API key:', error);
+          return;
+        }
+
+        if (data) {
+          const parsedData = JSON.parse(data);
+          setApiKey(parsedData.secret || null);
+        }
+      } catch (error) {
+        console.error('Error parsing API key:', error);
       }
     };
 
@@ -24,9 +33,12 @@ export const useMapsAutocomplete = () => {
   }, []);
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: googleMapsApiKey,
+    googleMapsApiKey: apiKey || '',
     libraries,
   });
 
-  return { isLoaded, loadError };
+  return { 
+    isLoaded: isLoaded && !!apiKey, 
+    loadError 
+  };
 };
