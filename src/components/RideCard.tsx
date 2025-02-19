@@ -149,22 +149,23 @@ export const RideCard = ({ ride, type, onAction }: RideCardProps) => {
 
       // Show different notifications based on the status
       if (status === 'accepted') {
-        // Get the requester's profile to notify them
-        const { data: requesterProfile, error: profileError } = await supabase
-          .from('profiles')
-          .select('email')
-          .eq('id', request.requester_id)
-          .single();
-
-        if (profileError) {
-          console.error('Error fetching requester profile:', profileError);
-        }
-
+        // Get current user (driver) details
+        const { data: { user } } = await supabase.auth.getUser();
+        
         // Show notification for the accepted request
-        toast('Ride request accepted!', {
-          description: `${request.requester_name}'s request to join the ride from ${ride.from_location} to ${ride.to_location} has been accepted.`,
-          duration: 5000,
-        });
+        if (user?.id === request.requester_id) {
+          // Notification for the rider
+          toast('Ride request accepted!', {
+            description: `${ride.driver_name} has accepted your request to join the ride from ${ride.from_location} to ${ride.to_location}.`,
+            duration: 5000,
+          });
+        } else {
+          // Notification for the driver
+          toast('Request accepted', {
+            description: `You've accepted ${request.requester_name}'s request to join the ride.`,
+            duration: 5000,
+          });
+        }
       }
       
       // Refresh the requests list
