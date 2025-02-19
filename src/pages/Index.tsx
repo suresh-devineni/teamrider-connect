@@ -8,6 +8,7 @@ import { LocationSelector } from "@/components/LocationSelector";
 import { RideToggle } from "@/components/RideToggle";
 import { RideCard } from "@/components/RideCard";
 import { RideRequestForm } from "@/components/RideRequestForm";
+import { OfferRideForm } from "@/components/OfferRideForm";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { type Ride } from "@/types/ride";
@@ -58,9 +59,13 @@ const Index = () => {
         <LocationSelector onLocationSelect={handleLocationSelect} />
         <RideToggle activeTab={activeTab} onTabChange={handleTabChange} />
 
-        {activeTab === "request" && (
+        {activeTab === "request" ? (
           <div className="mb-6">
             <RideRequestForm />
+          </div>
+        ) : (
+          <div className="mb-6">
+            <OfferRideForm />
           </div>
         )}
 
