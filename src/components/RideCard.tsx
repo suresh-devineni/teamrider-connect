@@ -64,6 +64,19 @@ export const RideCard = ({ ride, type, onAction }: RideCardProps) => {
         return;
       }
 
+      // First fetch the driver's profile to get their email
+      const { data: driverProfile, error: profileError } = await supabase
+        .from('profiles')
+        .select('email')
+        .eq('id', ride.driver_id)
+        .single();
+
+      if (profileError) {
+        console.error('Error fetching driver profile:', profileError);
+        toast.error('Failed to request ride');
+        return;
+      }
+
       const { error } = await supabase.from('ride_requests').insert({
         ride_id: ride.id,
         requester_id: user.id,
@@ -74,7 +87,15 @@ export const RideCard = ({ ride, type, onAction }: RideCardProps) => {
 
       if (error) throw error;
 
+      // Show success toast to the requester
       toast.success('Ride request sent successfully!');
+
+      // Show notification toast to the driver
+      toast('New ride request!', {
+        description: `${user.user_metadata.full_name || 'Someone'} wants to join your ride from ${ride.from_location} to ${ride.to_location}`,
+        duration: 5000,
+      });
+
       await onAction();
     } catch (error) {
       console.error('Error requesting ride:', error);
