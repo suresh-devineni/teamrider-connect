@@ -24,18 +24,27 @@ const Map = () => {
 
   React.useEffect(() => {
     const fetchApiKey = async () => {
-      const { data: { secret }, error } = await supabase.rpc('get_secret', {
-        secret_name: 'GOOGLE_MAPS_API_KEY'
-      });
+      try {
+        const { data, error } = await supabase.rpc('get_secret', {
+          secret_name: 'GOOGLE_MAPS_API_KEY'
+        });
 
-      if (error) {
-        console.error('Error fetching API key:', error);
-        toast.error('Failed to load map');
-        return;
-      }
+        if (error) {
+          console.error('Error fetching API key:', error);
+          toast.error('Failed to load map');
+          return;
+        }
 
-      if (secret) {
-        setApiKey(secret);
+        // Parse the returned JSON string
+        const parsedData = JSON.parse(data);
+        if (parsedData.secret) {
+          setApiKey(parsedData.secret);
+        } else {
+          toast.error('Google Maps API key not found');
+        }
+      } catch (error) {
+        console.error('Error processing API key:', error);
+        toast.error('Failed to load map configuration');
       }
     };
 
