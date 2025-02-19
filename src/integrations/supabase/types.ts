@@ -63,6 +63,48 @@ export type Database = {
         }
         Relationships: []
       }
+      rides: {
+        Row: {
+          created_at: string
+          departure_date: string
+          departure_time: string
+          distance: string | null
+          driver_id: string
+          driver_name: string
+          from_location: string
+          id: number
+          seats_available: number
+          to_location: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          departure_date: string
+          departure_time: string
+          distance?: string | null
+          driver_id: string
+          driver_name: string
+          from_location: string
+          id?: number
+          seats_available: number
+          to_location: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          departure_date?: string
+          departure_time?: string
+          distance?: string | null
+          driver_id?: string
+          driver_name?: string
+          from_location?: string
+          id?: number
+          seats_available?: number
+          to_location?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
