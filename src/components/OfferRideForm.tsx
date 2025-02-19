@@ -13,6 +13,10 @@ export const OfferRideForm = () => {
   const [formData, setFormData] = useState({
     from_location: "",
     to_location: "",
+    from_latitude: null as number | null,
+    from_longitude: null as number | null,
+    to_latitude: null as number | null,
+    to_longitude: null as number | null,
     departure_date: "",
     departure_time: "",
     seats_available: 1
@@ -35,6 +39,10 @@ export const OfferRideForm = () => {
         .insert({
           from_location: formData.from_location,
           to_location: formData.to_location,
+          from_latitude: formData.from_latitude,
+          from_longitude: formData.from_longitude,
+          to_latitude: formData.to_latitude,
+          to_longitude: formData.to_longitude,
           departure_date: formData.departure_date,
           departure_time: formData.departure_time,
           seats_available: formData.seats_available,
@@ -48,6 +56,10 @@ export const OfferRideForm = () => {
       setFormData({
         from_location: "",
         to_location: "",
+        from_latitude: null,
+        from_longitude: null,
+        to_latitude: null,
+        to_longitude: null,
         departure_date: "",
         departure_time: "",
         seats_available: 1
@@ -68,7 +80,12 @@ export const OfferRideForm = () => {
           <LocationInput
             id="from_location"
             value={formData.from_location}
-            onChange={(value) => setFormData(prev => ({ ...prev, from_location: value }))}
+            onChange={(value, lat, lng) => setFormData(prev => ({
+              ...prev,
+              from_location: value,
+              from_latitude: lat || null,
+              from_longitude: lng || null
+            }))}
             required
           />
         </div>
@@ -78,7 +95,12 @@ export const OfferRideForm = () => {
           <LocationInput
             id="to_location"
             value={formData.to_location}
-            onChange={(value) => setFormData(prev => ({ ...prev, to_location: value }))}
+            onChange={(value, lat, lng) => setFormData(prev => ({
+              ...prev,
+              to_location: value,
+              to_latitude: lat || null,
+              to_longitude: lng || null
+            }))}
             required
           />
         </div>

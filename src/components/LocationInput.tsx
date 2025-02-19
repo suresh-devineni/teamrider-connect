@@ -6,7 +6,7 @@ import { useMapsAutocomplete } from "@/hooks/useMapsAutocomplete";
 interface LocationInputProps {
   id: string;
   value: string;
-  onChange: (value: string) => void;
+  onChange: (value: string, lat?: number, lng?: number) => void;
   placeholder?: string;
   required?: boolean;
 }
@@ -20,13 +20,15 @@ export const LocationInput = ({ id, value, onChange, placeholder, required }: Lo
 
     const autocomplete = new google.maps.places.Autocomplete(inputRef.current, {
       types: ['geocode'],
-      fields: ['formatted_address'],
+      fields: ['formatted_address', 'geometry'],
     });
 
     autocomplete.addListener('place_changed', () => {
       const place = autocomplete.getPlace();
       if (place.formatted_address) {
-        onChange(place.formatted_address);
+        const lat = place.geometry?.location?.lat();
+        const lng = place.geometry?.location?.lng();
+        onChange(place.formatted_address, lat, lng);
       }
     });
 

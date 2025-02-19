@@ -104,10 +104,14 @@ export type Database = {
           distance: string | null
           driver_id: string
           driver_name: string
+          from_latitude: number | null
           from_location: string
+          from_longitude: number | null
           id: number
           seats_available: number
+          to_latitude: number | null
           to_location: string
+          to_longitude: number | null
           updated_at: string
         }
         Insert: {
@@ -117,10 +121,14 @@ export type Database = {
           distance?: string | null
           driver_id: string
           driver_name: string
+          from_latitude?: number | null
           from_location: string
+          from_longitude?: number | null
           id?: number
           seats_available: number
+          to_latitude?: number | null
           to_location: string
+          to_longitude?: number | null
           updated_at?: string
         }
         Update: {
@@ -130,10 +138,14 @@ export type Database = {
           distance?: string | null
           driver_id?: string
           driver_name?: string
+          from_latitude?: number | null
           from_location?: string
+          from_longitude?: number | null
           id?: number
           seats_available?: number
+          to_latitude?: number | null
           to_location?: string
+          to_longitude?: number | null
           updated_at?: string
         }
         Relationships: []

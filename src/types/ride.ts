@@ -3,6 +3,10 @@ export type Ride = {
   id: number;
   from_location: string;
   to_location: string;
+  from_latitude: number | null;
+  from_longitude: number | null;
+  to_latitude: number | null;
+  to_longitude: number | null;
   departure_time: string;
   departure_date: string;
   seats_available: number;
