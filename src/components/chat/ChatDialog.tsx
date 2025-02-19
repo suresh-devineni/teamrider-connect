@@ -19,6 +19,15 @@ export const ChatDialog = ({ isOpen, onClose, rideId }: ChatDialogProps) => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id || null);
+    };
+    getCurrentUser();
+  }, []);
 
   useEffect(() => {
     // Load existing messages
@@ -95,11 +104,6 @@ export const ChatDialog = ({ isOpen, onClose, rideId }: ChatDialogProps) => {
     setIsLoading(false);
   };
 
-  const getCurrentUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    return user;
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] h-[600px] flex flex-col">
@@ -109,30 +113,27 @@ export const ChatDialog = ({ isOpen, onClose, rideId }: ChatDialogProps) => {
         
         <ScrollArea className="flex-1 p-4">
           <div className="space-y-4">
-            {messages.map(async (msg) => {
-              const user = await getCurrentUser();
-              return (
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`flex flex-col ${
+                  msg.sender_id === currentUserId
+                    ? "items-end"
+                    : "items-start"
+                }`}
+              >
+                <span className="text-sm text-gray-500">{msg.sender_name}</span>
                 <div
-                  key={msg.id}
-                  className={`flex flex-col ${
-                    msg.sender_id === user?.id
-                      ? "items-end"
-                      : "items-start"
+                  className={`rounded-lg px-4 py-2 max-w-[80%] ${
+                    msg.sender_id === currentUserId
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted"
                   }`}
                 >
-                  <span className="text-sm text-gray-500">{msg.sender_name}</span>
-                  <div
-                    className={`rounded-lg px-4 py-2 max-w-[80%] ${
-                      msg.sender_id === user?.id
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted"
-                    }`}
-                  >
-                    {msg.content}
-                  </div>
+                  {msg.content}
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </ScrollArea>
 
