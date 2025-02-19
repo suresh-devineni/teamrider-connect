@@ -1,14 +1,24 @@
 
 export type Ride = {
   id: number;
-  from: string;
-  to: string;
-  time: string;
-  date: string;
-  seatsAvailable: number;
+  from_location: string;
+  to_location: string;
+  departure_time: string;
+  departure_date: string;
+  seats_available: number;
   distance: string;
   driver_id: string;
   driver_name: string;
+  created_at: string;
+};
+
+export type RideRequest = {
+  id: number;
+  ride_id: number;
+  requester_id: string;
+  requester_name: string;
+  status: 'pending' | 'accepted' | 'rejected';
+  seats_requested: number;
   created_at: string;
 };
 

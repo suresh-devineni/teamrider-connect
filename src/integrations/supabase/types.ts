@@ -63,6 +63,39 @@ export type Database = {
         }
         Relationships: []
       }
+      ride_requests: {
+        Row: {
+          created_at: string
+          id: number
+          requester_id: string
+          requester_name: string
+          ride_id: number
+          seats_requested: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          requester_id: string
+          requester_name: string
+          ride_id: number
+          seats_requested?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          requester_id?: string
+          requester_name?: string
+          ride_id?: number
+          seats_requested?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       rides: {
         Row: {
           created_at: string
