@@ -40,7 +40,7 @@ export const LiveLocationMap = ({ rideId, initialCenter }: LiveLocationMapProps)
           table: 'user_locations',
           filter: `ride_id=eq.${rideId}`,
         },
-        (payload) => {
+        (payload: any) => {
           if (payload.new) {
             setLocations(current => {
               const others = current.filter(loc => loc.user_id !== payload.new.user_id);

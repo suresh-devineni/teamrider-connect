@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,7 @@ import { UserPlus, MapPin, MessageCircle, Check, X, Play } from "lucide-react";
 import { type Ride, type RideRequest } from "@/types/ride";
 import { ChatDialog } from "@/components/chat/ChatDialog";
 import { RouteMap } from "@/components/RouteMap";
-import { LiveLocationMap } from "@/components/LocationMap";
+import { LiveLocationMap } from "@/components/LiveLocationMap";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
