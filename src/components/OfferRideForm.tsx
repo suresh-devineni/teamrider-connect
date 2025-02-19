@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -22,6 +22,43 @@ export const OfferRideForm = () => {
     departure_time: "",
     seats_available: 1
   });
+
+  useEffect(() => {
+    // Get current location when component mounts
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          
+          try {
+            // Use Google Maps Geocoding service to get address from coordinates
+            const geocoder = new google.maps.Geocoder();
+            const response = await geocoder.geocode({
+              location: { lat: latitude, lng: longitude }
+            });
+
+            if (response.results[0]) {
+              setFormData(prev => ({
+                ...prev,
+                from_location: response.results[0].formatted_address,
+                from_latitude: latitude,
+                from_longitude: longitude
+              }));
+            }
+          } catch (error) {
+            console.error('Error getting address:', error);
+            toast.error('Could not get current location address');
+          }
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          toast.error('Could not get current location');
+        }
+      );
+    } else {
+      toast.error('Geolocation is not supported by your browser');
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
