@@ -1,3 +1,4 @@
+
 # Welcome to your Lovable project
 
 ## Project info
@@ -50,6 +51,29 @@ npm run dev
 - Click on "New codespace" to launch a new Codespace environment.
 - Edit files directly within the Codespace and commit and push your changes once you're done.
 
+## Building with Docker
+
+This project includes Docker support for easy deployment. To build and run the application using Docker:
+
+1. Make sure you have Docker installed on your system
+2. Make the build script executable:
+   ```sh
+   chmod +x build.sh
+   ```
+3. Run the build script:
+   ```sh
+   ./build.sh
+   ```
+   This will create a Docker image tagged with your application version.
+
+4. To run the container locally:
+   ```sh
+   docker run -p 8080:80 lovable-app:<VERSION>
+   ```
+   Replace `<VERSION>` with your app version from package.json.
+
+The Docker build uses a multi-stage process to create a lightweight production image using Nginx to serve the application.
+
 ## What technologies are used for this project?
 
 This project is built with .
@@ -62,7 +86,22 @@ This project is built with .
 
 ## How can I deploy this project?
 
+**Option 1: Using Lovable**
 Simply open [Lovable](https://lovable.dev/projects/ac9dfdf2-b935-4315-bd70-b50b1414c1e1) and click on Share -> Publish.
+
+**Option 2: Using Docker**
+You can deploy the Docker image to any container hosting service that supports Docker:
+
+1. Build the Docker image using the provided build script
+2. Tag the image for your container registry:
+   ```sh
+   docker tag lovable-app:<VERSION> <registry-url>/lovable-app:<VERSION>
+   ```
+3. Push the image to your container registry:
+   ```sh
+   docker push <registry-url>/lovable-app:<VERSION>
+   ```
+4. Deploy using your preferred container hosting service (AWS ECS, Google Cloud Run, Azure Container Apps, etc.)
 
 ## I want to use a custom domain - is that possible?
 
