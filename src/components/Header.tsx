@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -13,28 +13,67 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogOut, User as UserIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+
+interface Profile {
+  id: string;
+  email: string;
+  full_name: string;
+  avatar_url: string | null;
+}
 
 export const Header = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchProfile(session.user.id);
+      }
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchProfile(session.user.id);
+      } else {
+        setProfile(null);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  const fetchProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      if (data) {
+        setProfile(data as Profile);
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      toast.error('Failed to load user profile');
+    }
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    setProfile(null);
     navigate("/");
   };
 
@@ -51,13 +90,26 @@ export const Header = () => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-10 w-10 rounded-full p-0">
                 <Avatar>
-                  <AvatarFallback>
-                    <UserIcon className="h-5 w-5" />
-                  </AvatarFallback>
+                  {profile?.avatar_url ? (
+                    <AvatarImage src={profile.avatar_url} alt={profile.full_name || 'User'} />
+                  ) : (
+                    <AvatarFallback>
+                      {profile?.full_name ? profile.full_name[0].toUpperCase() : <UserIcon className="h-5 w-5" />}
+                    </AvatarFallback>
+                  )}
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                className="text-gray-700"
+                onClick={() => navigate("/profile")}
+              >
+                <div className="flex flex-col">
+                  <span className="font-medium">{profile?.full_name}</span>
+                  <span className="text-sm text-gray-500">{profile?.email}</span>
+                </div>
+              </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-red-600 cursor-pointer"
                 onClick={handleLogout}
