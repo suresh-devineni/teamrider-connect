@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Header } from "@/components/Header";
@@ -15,6 +15,15 @@ import { toast } from "sonner";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<"offer" | "request">("offer");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id || null);
+    };
+    getUser();
+  }, []);
 
   const { data: rides, isLoading, error, refetch } = useQuery({
     queryKey: ['rides'],
@@ -44,6 +53,15 @@ const Index = () => {
     return null;
   }
 
+  const filteredRides = rides?.filter(ride => {
+    if (activeTab === "offer") {
+      // In offer tab, show all rides except user's own offers
+      return currentUserId ? ride.driver_id !== currentUserId : true;
+    }
+    // In request tab, show only user's own rides
+    return currentUserId ? ride.driver_id === currentUserId : false;
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <Header />
@@ -64,9 +82,9 @@ const Index = () => {
         <ScrollArea className="h-[calc(100vh-430px)]">
           {isLoading ? (
             <div className="text-center py-4">Loading rides...</div>
-          ) : rides && rides.length > 0 ? (
+          ) : filteredRides && filteredRides.length > 0 ? (
             <div className="space-y-4">
-              {rides.map((ride) => (
+              {filteredRides.map((ride) => (
                 <RideCard 
                   key={ride.id} 
                   ride={ride}
