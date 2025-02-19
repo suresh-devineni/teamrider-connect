@@ -2,8 +2,9 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { LocationInput } from "@/components/LocationInput";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
@@ -64,20 +65,20 @@ export const OfferRideForm = () => {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <Label htmlFor="from_location">From</Label>
-          <Input
+          <LocationInput
             id="from_location"
             value={formData.from_location}
-            onChange={(e) => setFormData(prev => ({ ...prev, from_location: e.target.value }))}
+            onChange={(value) => setFormData(prev => ({ ...prev, from_location: value }))}
             required
           />
         </div>
         
         <div>
           <Label htmlFor="to_location">To</Label>
-          <Input
+          <LocationInput
             id="to_location"
             value={formData.to_location}
-            onChange={(e) => setFormData(prev => ({ ...prev, to_location: e.target.value }))}
+            onChange={(value) => setFormData(prev => ({ ...prev, to_location: value }))}
             required
           />
         </div>
