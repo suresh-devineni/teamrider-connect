@@ -1,5 +1,5 @@
 
-import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type RideToggleProps = {
   activeTab: "offer" | "request";
@@ -8,21 +8,19 @@ type RideToggleProps = {
 
 export const RideToggle = ({ activeTab, onTabChange }: RideToggleProps) => {
   return (
-    <div className="flex gap-2 mb-6">
-      <Button
-        variant={activeTab === "offer" ? "default" : "outline"}
-        onClick={() => onTabChange("offer")}
-        className="flex-1 transition-all duration-300"
-      >
-        Offer Ride
-      </Button>
-      <Button
-        variant={activeTab === "request" ? "default" : "outline"}
-        onClick={() => onTabChange("request")}
-        className="flex-1 transition-all duration-300"
-      >
-        Request Ride
-      </Button>
-    </div>
+    <Tabs
+      value={activeTab}
+      onValueChange={(value) => onTabChange(value as "offer" | "request")}
+      className="w-full mb-6"
+    >
+      <TabsList className="w-full">
+        <TabsTrigger value="offer" className="flex-1">
+          Offer Ride
+        </TabsTrigger>
+        <TabsTrigger value="request" className="flex-1">
+          Request Ride
+        </TabsTrigger>
+      </TabsList>
+    </Tabs>
   );
 };
