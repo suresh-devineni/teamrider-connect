@@ -55,11 +55,11 @@ const Index = () => {
 
   const filteredRides = rides?.filter(ride => {
     if (activeTab === "offer") {
-      // In offer tab, show all rides except user's own offers
-      return currentUserId ? ride.driver_id !== currentUserId : true;
+      // In offer tab, show only user's own rides
+      return currentUserId ? ride.driver_id === currentUserId : false;
     }
-    // In request tab, show only user's own rides
-    return currentUserId ? ride.driver_id === currentUserId : false;
+    // In request tab, show all rides except user's own rides
+    return currentUserId ? ride.driver_id !== currentUserId : true;
   });
 
   return (
