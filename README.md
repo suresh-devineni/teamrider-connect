@@ -1,4 +1,3 @@
-
 # Welcome to your Lovable project
 
 ## Project info
@@ -102,6 +101,42 @@ You can deploy the Docker image to any container hosting service that supports D
    docker push <registry-url>/lovable-app:<VERSION>
    ```
 4. Deploy using your preferred container hosting service (AWS ECS, Google Cloud Run, Azure Container Apps, etc.)
+
+## Deploying to Kubernetes with Helm
+
+This project includes Helm charts for deploying to Kubernetes. To deploy using Helm:
+
+1. Make sure you have Helm installed and your kubectl context is set to the correct cluster
+
+2. Build and push the Docker image to your registry:
+   ```sh
+   ./build.sh
+   docker tag lovable-app:<VERSION> <registry-url>/lovable-app:<VERSION>
+   docker push <registry-url>/lovable-app:<VERSION>
+   ```
+
+3. Install the Helm chart:
+   ```sh
+   helm install my-lovable-app ./helm/lovable-app \
+     --set image.repository=<registry-url>/lovable-app \
+     --set image.tag=<VERSION>
+   ```
+
+4. To enable ingress (optional):
+   ```sh
+   helm install my-lovable-app ./helm/lovable-app \
+     --set image.repository=<registry-url>/lovable-app \
+     --set image.tag=<VERSION> \
+     --set ingress.enabled=true \
+     --set ingress.hosts[0].host=your-domain.com
+   ```
+
+5. To update the deployment:
+   ```sh
+   helm upgrade my-lovable-app ./helm/lovable-app \
+     --set image.repository=<registry-url>/lovable-app \
+     --set image.tag=<NEW_VERSION>
+   ```
 
 ## I want to use a custom domain - is that possible?
 
