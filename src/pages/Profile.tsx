@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 import { Header } from "@/components/Header";
 import { User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
+import { BottomNav } from "@/components/BottomNav";
 
 interface Profile {
   id: string;
@@ -87,6 +88,8 @@ const Profile = () => {
           </div>
         </Card>
       </main>
+
+      <BottomNav />
     </div>
   );
 };
