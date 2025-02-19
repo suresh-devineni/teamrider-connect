@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,7 @@ import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
-import { Google } from "lucide-react";
+import { google } from "lucide-react";
 
 type AuthModalProps = {
   isOpen: boolean;
@@ -106,7 +105,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
           className="w-full"
           onClick={handleGoogleSignIn}
         >
-          <Google className="mr-2 h-4 w-4" />
+          <google className="mr-2 h-4 w-4" />
           Continue with Google
         </Button>
 
@@ -174,4 +173,3 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     </Dialog>
   );
 };
-
