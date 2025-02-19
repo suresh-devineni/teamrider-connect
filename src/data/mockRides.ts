@@ -16,7 +16,8 @@ export const mockRides: Ride[] = [
     distance: "5.2 km",
     driver_id: "1",
     driver_name: "John Smith",
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    ride_status: "pending"
   },
   {
     id: 2,
@@ -32,7 +33,8 @@ export const mockRides: Ride[] = [
     distance: "3.8 km",
     driver_id: "2",
     driver_name: "Sarah Johnson",
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    ride_status: "pending"
   },
   {
     id: 3,
@@ -48,6 +50,7 @@ export const mockRides: Ride[] = [
     distance: "6.1 km",
     driver_id: "3",
     driver_name: "Michael Chen",
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    ride_status: "pending"
   }
 ];

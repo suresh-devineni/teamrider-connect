@@ -108,6 +108,7 @@ export type Database = {
           from_location: string
           from_longitude: number | null
           id: number
+          ride_status: string
           seats_available: number
           to_latitude: number | null
           to_location: string
@@ -125,6 +126,7 @@ export type Database = {
           from_location: string
           from_longitude?: number | null
           id?: number
+          ride_status?: string
           seats_available: number
           to_latitude?: number | null
           to_location: string
@@ -142,6 +144,7 @@ export type Database = {
           from_location?: string
           from_longitude?: number | null
           id?: number
+          ride_status?: string
           seats_available?: number
           to_latitude?: number | null
           to_location?: string
