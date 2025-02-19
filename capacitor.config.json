@@ -1,0 +1,15 @@
+
+{
+  "appId": "app.lovable.ac9dfdf2b9354315bd70b50b1414c1e1",
+  "appName": "teamrider-connect",
+  "webDir": "dist",
+  "server": {
+    "url": "https://ac9dfdf2-b935-4315-bd70-b50b1414c1e1.lovableproject.com?forceHideBadge=true",
+    "cleartext": true
+  },
+  "plugins": {
+    "Haptics": {
+      "enabled": true
+    }
+  }
+}
