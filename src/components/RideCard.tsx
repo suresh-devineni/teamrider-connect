@@ -5,6 +5,7 @@ import { UserPlus, MapPin, MessageCircle, Check, X, Play } from "lucide-react";
 import { type Ride, type RideRequest } from "@/types/ride";
 import { ChatDialog } from "@/components/chat/ChatDialog";
 import { RouteMap } from "@/components/RouteMap";
+import { LiveLocationMap } from "@/components/LocationMap";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
@@ -182,16 +183,26 @@ export const RideCard = ({ ride, type, onAction }: RideCardProps) => {
           </div>
         </div>
 
-        <RouteMap 
-          fromLocation={{
-            lat: ride.from_latitude,
-            lng: ride.from_longitude
-          }}
-          toLocation={{
-            lat: ride.to_latitude,
-            lng: ride.to_longitude
-          }}
-        />
+        {ride.ride_status === 'in_progress' ? (
+          <LiveLocationMap 
+            rideId={ride.id}
+            initialCenter={{
+              lat: ride.from_latitude || 37.7749,
+              lng: ride.from_longitude || -122.4194
+            }}
+          />
+        ) : (
+          <RouteMap 
+            fromLocation={{
+              lat: ride.from_latitude,
+              lng: ride.from_longitude
+            }}
+            toLocation={{
+              lat: ride.to_latitude,
+              lng: ride.to_longitude
+            }}
+          />
+        )}
         
         {showRequests && requests.length > 0 && (
           <div className="border-t pt-3 mt-3">

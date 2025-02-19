@@ -153,6 +153,41 @@ export type Database = {
         }
         Relationships: []
       }
+      user_locations: {
+        Row: {
+          latitude: number
+          longitude: number
+          ride_id: number
+          updated_at: string | null
+          user_id: string
+          user_type: string
+        }
+        Insert: {
+          latitude: number
+          longitude: number
+          ride_id: number
+          updated_at?: string | null
+          user_id: string
+          user_type: string
+        }
+        Update: {
+          latitude?: number
+          longitude?: number
+          ride_id?: number
+          updated_at?: string | null
+          user_id?: string
+          user_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_locations_ride_id_fkey"
+            columns: ["ride_id"]
+            isOneToOne: false
+            referencedRelation: "rides"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
