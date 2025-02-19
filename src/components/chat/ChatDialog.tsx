@@ -69,8 +69,8 @@ export const ChatDialog = ({ isOpen, onClose, rideId }: ChatDialogProps) => {
     
     setIsLoading(true);
     
-    const { data: userData, error: userError } = await supabase.auth.getUser();
-    if (userError || !userData.user) {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
       toast.error("Please login to send messages");
       setIsLoading(false);
       return;
@@ -78,8 +78,8 @@ export const ChatDialog = ({ isOpen, onClose, rideId }: ChatDialogProps) => {
 
     const newMessage = {
       ride_id: rideId,
-      sender_id: userData.user.id,
-      sender_name: userData.user.user_metadata.full_name || "Anonymous",
+      sender_id: user.id,
+      sender_name: user.user_metadata.full_name || "Anonymous",
       content: message.trim(),
     };
 
@@ -104,27 +104,30 @@ export const ChatDialog = ({ isOpen, onClose, rideId }: ChatDialogProps) => {
         
         <ScrollArea className="flex-1 p-4">
           <div className="space-y-4">
-            {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex flex-col ${
-                  msg.sender_id === supabase.auth.getUser().data.user?.id
-                    ? "items-end"
-                    : "items-start"
-                }`}
-              >
-                <span className="text-sm text-gray-500">{msg.sender_name}</span>
+            {messages.map((msg) => {
+              const { data: { user } } = supabase.auth.getUser();
+              return (
                 <div
-                  className={`rounded-lg px-4 py-2 max-w-[80%] ${
-                    msg.sender_id === supabase.auth.getUser().data.user?.id
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted"
+                  key={msg.id}
+                  className={`flex flex-col ${
+                    msg.sender_id === user?.id
+                      ? "items-end"
+                      : "items-start"
                   }`}
                 >
-                  {msg.content}
+                  <span className="text-sm text-gray-500">{msg.sender_name}</span>
+                  <div
+                    className={`rounded-lg px-4 py-2 max-w-[80%] ${
+                      msg.sender_id === user?.id
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted"
+                    }`}
+                  >
+                    {msg.content}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </ScrollArea>
 

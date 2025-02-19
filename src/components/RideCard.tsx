@@ -25,7 +25,7 @@ export const RideCard = ({ ride, type, onAction }: RideCardProps) => {
             </span>
             <h3 className="font-medium text-gray-900">{ride.from} → {ride.to}</h3>
             <p className="text-sm text-gray-500 mt-1">{ride.date}, {ride.time}</p>
-            <p className="text-sm text-gray-500">Driver: {ride.driver}</p>
+            <p className="text-sm text-gray-500">Driver: {ride.driver_name}</p>
           </div>
           <div className="flex gap-2">
             <Button
