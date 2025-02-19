@@ -24,6 +24,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN') {
+        console.log('User signed in:', session?.user);
         toast.success("Successfully logged in!");
         onClose();
         navigate("/");
@@ -46,7 +47,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
         
         if (error) throw error;
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { error: signUpError, data } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -56,13 +57,17 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
           },
         });
         
-        if (error) throw error;
-        toast.success("Successfully signed up! Please check your email for verification.");
-        onClose();
+        if (signUpError) throw signUpError;
+
+        if (data.user) {
+          console.log('Profile created for user:', data.user.id);
+          toast.success("Successfully signed up! Please check your email for verification.");
+          onClose();
+        }
       }
     } catch (error) {
       console.error("Auth error:", error);
-      toast.error(error instanceof Error ? error.message : "An error occurred");
+      toast.error(error instanceof Error ? error.message : "An error occurred during authentication");
     } finally {
       setIsLoading(false);
     }
@@ -83,6 +88,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter your name"
+                required
               />
             </div>
           )}
@@ -94,6 +100,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
+              required
             />
           </div>
           <div className="space-y-2">
@@ -104,6 +111,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
+              required
             />
           </div>
           <Button type="submit" className="w-full" disabled={isLoading}>
