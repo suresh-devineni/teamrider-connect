@@ -129,6 +129,17 @@ export const RideCard = ({ ride, type, onAction }: RideCardProps) => {
   const handleRequestAction = async (requestId: number, status: 'accepted' | 'rejected') => {
     try {
       setIsLoading(true);
+      
+      // First get the request details to get the requester info
+      const { data: request, error: requestError } = await supabase
+        .from('ride_requests')
+        .select('requester_id, requester_name')
+        .eq('id', requestId)
+        .single();
+
+      if (requestError) throw requestError;
+
+      // Update the request status
       const { error } = await supabase
         .from('ride_requests')
         .update({ status })
@@ -136,8 +147,27 @@ export const RideCard = ({ ride, type, onAction }: RideCardProps) => {
 
       if (error) throw error;
 
-      toast.success(`Request ${status}`);
+      // Show different notifications based on the status
+      if (status === 'accepted') {
+        // Get the requester's profile to notify them
+        const { data: requesterProfile, error: profileError } = await supabase
+          .from('profiles')
+          .select('email')
+          .eq('id', request.requester_id)
+          .single();
+
+        if (profileError) {
+          console.error('Error fetching requester profile:', profileError);
+        }
+
+        // Show notification for the accepted request
+        toast('Ride request accepted!', {
+          description: `${request.requester_name}'s request to join the ride from ${ride.from_location} to ${ride.to_location} has been accepted.`,
+          duration: 5000,
+        });
+      }
       
+      // Refresh the requests list
       const { data, error: fetchError } = await supabase
         .from('ride_requests')
         .select('*')
