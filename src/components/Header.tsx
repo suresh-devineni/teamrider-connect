@@ -39,6 +39,7 @@ export const Header = () => {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      console.log("Auth state changed:", _event, session);
       setUser(session?.user ?? null);
       if (session?.user) {
         fetchProfile(session.user.id);
@@ -52,21 +53,47 @@ export const Header = () => {
 
   const fetchProfile = async (userId: string) => {
     try {
+      console.log("Fetching profile for user:", userId);
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
       if (error) {
+        console.error('Supabase error:', error);
         throw error;
       }
 
+      console.log("Profile data:", data);
       if (data) {
         setProfile(data as Profile);
+      } else {
+        // If no profile exists, create one
+        const { data: newData, error: createError } = await supabase
+          .from('profiles')
+          .insert([
+            { 
+              id: userId,
+              email: user?.email,
+              full_name: user?.user_metadata.full_name
+            }
+          ])
+          .select()
+          .single();
+
+        if (createError) {
+          console.error('Profile creation error:', createError);
+          throw createError;
+        }
+
+        if (newData) {
+          console.log("Created new profile:", newData);
+          setProfile(newData as Profile);
+        }
       }
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error('Error fetching/creating profile:', error);
       toast.error('Failed to load user profile');
     }
   };

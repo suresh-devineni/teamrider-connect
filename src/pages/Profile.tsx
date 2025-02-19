@@ -35,10 +35,29 @@ const Profile = () => {
           .from('profiles')
           .select('*')
           .eq('id', session.user.id)
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
-        setProfile(data as Profile);
+        
+        if (data) {
+          setProfile(data as Profile);
+        } else {
+          // If no profile exists, create one
+          const { data: newData, error: createError } = await supabase
+            .from('profiles')
+            .insert([
+              { 
+                id: session.user.id,
+                email: session.user.email,
+                full_name: session.user.user_metadata.full_name
+              }
+            ])
+            .select()
+            .single();
+
+          if (createError) throw createError;
+          if (newData) setProfile(newData as Profile);
+        }
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast.error('Failed to load profile');
