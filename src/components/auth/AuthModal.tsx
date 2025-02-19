@@ -1,11 +1,12 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
+import { useNavigate } from "react-router-dom";
 
 type AuthModalProps = {
   isOpen: boolean;
@@ -18,6 +19,19 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN') {
+        toast.success("Successfully logged in!");
+        onClose();
+        navigate("/");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate, onClose]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,8 +45,6 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
         });
         
         if (error) throw error;
-        toast.success("Successfully logged in!");
-        onClose();
       } else {
         const { error } = await supabase.auth.signUp({
           email,
@@ -49,6 +61,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
         onClose();
       }
     } catch (error) {
+      console.error("Auth error:", error);
       toast.error(error instanceof Error ? error.message : "An error occurred");
     } finally {
       setIsLoading(false);
