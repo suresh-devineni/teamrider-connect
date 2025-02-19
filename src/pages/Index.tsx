@@ -7,6 +7,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { LocationSelector } from "@/components/LocationSelector";
 import { RideToggle } from "@/components/RideToggle";
 import { RideCard } from "@/components/RideCard";
+import { RideRequestForm } from "@/components/RideRequestForm";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { type Ride } from "@/types/ride";
@@ -56,6 +57,12 @@ const Index = () => {
       <main className="pt-24 px-4 pb-20">
         <LocationSelector onLocationSelect={handleLocationSelect} />
         <RideToggle activeTab={activeTab} onTabChange={handleTabChange} />
+
+        {activeTab === "request" && (
+          <div className="mb-6">
+            <RideRequestForm />
+          </div>
+        )}
 
         <ScrollArea className="h-[calc(100vh-430px)]">
           {isLoading ? (
