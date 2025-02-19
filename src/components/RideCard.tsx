@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { UserPlus, MapPin, MessageCircle, Check, X } from "lucide-react";
 import { type Ride, type RideRequest } from "@/types/ride";
 import { ChatDialog } from "@/components/chat/ChatDialog";
+import { RouteMap } from "@/components/RouteMap";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
@@ -132,6 +133,17 @@ export const RideCard = ({ ride, type, onAction }: RideCardProps) => {
             </Button>
           </div>
         </div>
+
+        <RouteMap 
+          fromLocation={{
+            lat: ride.from_latitude,
+            lng: ride.from_longitude
+          }}
+          toLocation={{
+            lat: ride.to_latitude,
+            lng: ride.to_longitude
+          }}
+        />
         
         {showRequests && requests.length > 0 && (
           <div className="border-t pt-3 mt-3">
