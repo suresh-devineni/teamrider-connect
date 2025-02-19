@@ -4,7 +4,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
-import { LocationSelector } from "@/components/LocationSelector";
 import { RideToggle } from "@/components/RideToggle";
 import { RideCard } from "@/components/RideCard";
 import { RideRequestForm } from "@/components/RideRequestForm";
@@ -16,7 +15,6 @@ import { toast } from "sonner";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<"offer" | "request">("offer");
-  const [selectedLocation, setSelectedLocation] = useState<"from" | "to" | null>(null);
 
   const { data: rides, isLoading, error, refetch } = useQuery({
     queryKey: ['rides'],
@@ -41,11 +39,6 @@ const Index = () => {
     await refetch();
   };
 
-  const handleLocationSelect = async (type: "from" | "to") => {
-    await Haptics.impact({ style: ImpactStyle.Light });
-    setSelectedLocation(type);
-  };
-
   if (error) {
     toast.error('Failed to load rides');
     return null;
@@ -56,7 +49,6 @@ const Index = () => {
       <Header />
       
       <main className="pt-24 px-4 pb-20">
-        <LocationSelector onLocationSelect={handleLocationSelect} />
         <RideToggle activeTab={activeTab} onTabChange={handleTabChange} />
 
         {activeTab === "request" ? (
