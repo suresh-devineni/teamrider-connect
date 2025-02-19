@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { LocationInput } from "@/components/LocationInput";
+import { RouteMap } from "@/components/RouteMap";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
@@ -104,6 +105,17 @@ export const OfferRideForm = () => {
             required
           />
         </div>
+
+        <RouteMap 
+          fromLocation={{
+            lat: formData.from_latitude,
+            lng: formData.from_longitude
+          }}
+          toLocation={{
+            lat: formData.to_latitude,
+            lng: formData.to_longitude
+          }}
+        />
         
         <div>
           <Label htmlFor="departure_date">Date</Label>
