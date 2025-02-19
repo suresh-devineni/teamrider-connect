@@ -95,6 +95,11 @@ export const ChatDialog = ({ isOpen, onClose, rideId }: ChatDialogProps) => {
     setIsLoading(false);
   };
 
+  const getCurrentUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    return user;
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] h-[600px] flex flex-col">
@@ -104,8 +109,8 @@ export const ChatDialog = ({ isOpen, onClose, rideId }: ChatDialogProps) => {
         
         <ScrollArea className="flex-1 p-4">
           <div className="space-y-4">
-            {messages.map((msg) => {
-              const { data: { user } } = supabase.auth.getUser();
+            {messages.map(async (msg) => {
+              const user = await getCurrentUser();
               return (
                 <div
                   key={msg.id}
