@@ -67,6 +67,9 @@ export type Database = {
         Row: {
           created_at: string
           id: number
+          is_recurring: boolean | null
+          recurring_days: number[] | null
+          recurring_until: string | null
           requester_id: string
           requester_name: string
           ride_id: number
@@ -77,6 +80,9 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: number
+          is_recurring?: boolean | null
+          recurring_days?: number[] | null
+          recurring_until?: string | null
           requester_id: string
           requester_name: string
           ride_id: number
@@ -87,6 +93,9 @@ export type Database = {
         Update: {
           created_at?: string
           id?: number
+          is_recurring?: boolean | null
+          recurring_days?: number[] | null
+          recurring_until?: string | null
           requester_id?: string
           requester_name?: string
           ride_id?: number
@@ -108,6 +117,9 @@ export type Database = {
           from_location: string
           from_longitude: number | null
           id: number
+          is_recurring: boolean | null
+          recurring_days: number[] | null
+          recurring_until: string | null
           ride_status: string
           seats_available: number
           to_latitude: number | null
@@ -126,6 +138,9 @@ export type Database = {
           from_location: string
           from_longitude?: number | null
           id?: number
+          is_recurring?: boolean | null
+          recurring_days?: number[] | null
+          recurring_until?: string | null
           ride_status?: string
           seats_available: number
           to_latitude?: number | null
@@ -144,6 +159,9 @@ export type Database = {
           from_location?: string
           from_longitude?: number | null
           id?: number
+          is_recurring?: boolean | null
+          recurring_days?: number[] | null
+          recurring_until?: string | null
           ride_status?: string
           seats_available?: number
           to_latitude?: number | null

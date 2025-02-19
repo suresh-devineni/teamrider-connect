@@ -4,10 +4,21 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { LocationInput } from "@/components/LocationInput";
 import { RouteMap } from "@/components/RouteMap";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+
+const DAYS_OF_WEEK = [
+  { id: 0, label: "Sun" },
+  { id: 1, label: "Mon" },
+  { id: 2, label: "Tue" },
+  { id: 3, label: "Wed" },
+  { id: 4, label: "Thu" },
+  { id: 5, label: "Fri" },
+  { id: 6, label: "Sat" },
+];
 
 export const OfferRideForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +31,10 @@ export const OfferRideForm = () => {
     to_longitude: null as number | null,
     departure_date: "",
     departure_time: "",
-    seats_available: 1
+    seats_available: 1,
+    is_recurring: false,
+    recurring_days: [] as number[],
+    recurring_until: ""
   });
 
   useEffect(() => {
@@ -85,7 +99,10 @@ export const OfferRideForm = () => {
           departure_time: formData.departure_time,
           seats_available: formData.seats_available,
           driver_id: user.id,
-          driver_name: user.user_metadata.full_name || 'Anonymous'
+          driver_name: user.user_metadata.full_name || 'Anonymous',
+          is_recurring: formData.is_recurring,
+          recurring_days: formData.is_recurring ? formData.recurring_days : [],
+          recurring_until: formData.is_recurring ? formData.recurring_until : null
         });
 
       if (error) throw error;
@@ -100,7 +117,10 @@ export const OfferRideForm = () => {
         to_longitude: null,
         departure_date: "",
         departure_time: "",
-        seats_available: 1
+        seats_available: 1,
+        is_recurring: false,
+        recurring_days: [],
+        recurring_until: ""
       });
     } catch (error) {
       console.error('Error offering ride:', error);
@@ -186,6 +206,59 @@ export const OfferRideForm = () => {
             onChange={(e) => setFormData(prev => ({ ...prev, seats_available: parseInt(e.target.value) }))}
             required
           />
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="is_recurring"
+              checked={formData.is_recurring}
+              onCheckedChange={(checked) => 
+                setFormData(prev => ({ 
+                  ...prev, 
+                  is_recurring: checked as boolean,
+                  recurring_days: checked ? prev.recurring_days : []
+                }))
+              }
+            />
+            <Label htmlFor="is_recurring">Recurring Ride</Label>
+          </div>
+
+          {formData.is_recurring && (
+            <>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {DAYS_OF_WEEK.map((day) => (
+                  <Button
+                    key={day.id}
+                    type="button"
+                    size="sm"
+                    variant={formData.recurring_days.includes(day.id) ? "default" : "outline"}
+                    onClick={() => {
+                      setFormData(prev => ({
+                        ...prev,
+                        recurring_days: prev.recurring_days.includes(day.id)
+                          ? prev.recurring_days.filter(d => d !== day.id)
+                          : [...prev.recurring_days, day.id].sort()
+                      }));
+                    }}
+                  >
+                    {day.label}
+                  </Button>
+                ))}
+              </div>
+
+              <div className="mt-2">
+                <Label htmlFor="recurring_until">Recurring Until</Label>
+                <Input
+                  id="recurring_until"
+                  type="date"
+                  value={formData.recurring_until}
+                  onChange={(e) => setFormData(prev => ({ ...prev, recurring_until: e.target.value }))}
+                  required={formData.is_recurring}
+                />
+              </div>
+            </>
+          )}
         </div>
 
         <Button type="submit" className="w-full" disabled={isLoading}>
