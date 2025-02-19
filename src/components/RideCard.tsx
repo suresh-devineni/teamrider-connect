@@ -1,8 +1,7 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { UserPlus, MapPin, MessageCircle, Check, X } from "lucide-react";
+import { UserPlus, MapPin, MessageCircle, Check, X, Play } from "lucide-react";
 import { type Ride, type RideRequest } from "@/types/ride";
 import { ChatDialog } from "@/components/chat/ChatDialog";
 import { RouteMap } from "@/components/RouteMap";
@@ -20,6 +19,38 @@ export const RideCard = ({ ride, type, onAction }: RideCardProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showRequests, setShowRequests] = useState(false);
   const [requests, setRequests] = useState<RideRequest[]>([]);
+
+  const handleStartRide = async () => {
+    try {
+      setIsLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error('Please sign in to start the ride');
+        return;
+      }
+
+      if (user.id !== ride.driver_id) {
+        toast.error('Only the driver can start the ride');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('rides')
+        .update({ ride_status: 'in_progress' })
+        .eq('id', ride.id);
+
+      if (error) throw error;
+
+      toast.success('Ride started successfully!');
+      await onAction();
+    } catch (error) {
+      console.error('Error starting ride:', error);
+      toast.error('Failed to start ride');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleRequestSeat = async () => {
     try {
@@ -84,7 +115,6 @@ export const RideCard = ({ ride, type, onAction }: RideCardProps) => {
 
       toast.success(`Request ${status}`);
       
-      // Refresh requests list
       const { data, error: fetchError } = await supabase
         .from('ride_requests')
         .select('*')
@@ -108,9 +138,16 @@ export const RideCard = ({ ride, type, onAction }: RideCardProps) => {
       <Card className="p-4 space-y-3 hover:shadow-md transition-shadow duration-200">
         <div className="flex justify-between items-start">
           <div>
-            <span className="inline-block px-2 py-1 text-xs font-medium bg-emerald-50 text-emerald-700 rounded-full mb-2">
-              {type === "offer" ? "Offering" : "Requesting"}
-            </span>
+            <div className="flex gap-2 items-center mb-2">
+              <span className="inline-block px-2 py-1 text-xs font-medium bg-emerald-50 text-emerald-700 rounded-full">
+                {type === "offer" ? "Offering" : "Requesting"}
+              </span>
+              {ride.ride_status === 'in_progress' && (
+                <span className="inline-block px-2 py-1 text-xs font-medium bg-blue-50 text-blue-700 rounded-full">
+                  In Progress
+                </span>
+              )}
+            </div>
             <h3 className="font-medium text-gray-900">{ride.from_location} → {ride.to_location}</h3>
             <p className="text-sm text-gray-500 mt-1">{ride.departure_date}, {ride.departure_time}</p>
             <p className="text-sm text-gray-500">Driver: {ride.driver_name}</p>
@@ -123,6 +160,17 @@ export const RideCard = ({ ride, type, onAction }: RideCardProps) => {
             >
               <MessageCircle className="h-4 w-4" />
             </Button>
+            {type === "offer" && ride.ride_status === 'pending' && (
+              <Button
+                size="sm"
+                variant="default"
+                onClick={handleStartRide}
+                disabled={isLoading}
+              >
+                <Play className="h-4 w-4 mr-1" />
+                Start Ride
+              </Button>
+            )}
             <Button 
               size="sm" 
               variant="outline"

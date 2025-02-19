@@ -1,4 +1,3 @@
-
 export type Ride = {
   id: number;
   from_location: string;
@@ -14,6 +13,7 @@ export type Ride = {
   driver_id: string;
   driver_name: string;
   created_at: string;
+  ride_status: 'pending' | 'in_progress' | 'completed';
 };
 
 export type RideRequest = {
