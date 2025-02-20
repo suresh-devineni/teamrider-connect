@@ -4,7 +4,7 @@
   "appName": "teamrider-connect",
   "webDir": "dist",
   "server": {
-    "url": "https://ac9dfdf2-b935-4315-bd70-b50b1414c1e1.lovableproject.com?forceHideBadge=true",
+    "url": "http://localhost:8080",
     "cleartext": true
   },
   "plugins": {
