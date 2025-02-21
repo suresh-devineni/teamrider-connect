@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { BottomNav } from "@/components/BottomNav";
 
 interface Classified {
   id: number;
@@ -57,11 +58,21 @@ export default function Classifieds() {
   }, [navigate]);
 
   if (isLoading) {
-    return <div className="p-8">Loading classifieds...</div>;
+    return (
+      <>
+        <div className="p-8">Loading classifieds...</div>
+        <BottomNav />
+      </>
+    );
   }
 
   if (error) {
-    return <div className="p-8">Error loading classifieds</div>;
+    return (
+      <>
+        <div className="p-8">Error loading classifieds</div>
+        <BottomNav />
+      </>
+    );
   }
 
   // Get unique categories and locations from classifieds
@@ -80,58 +91,61 @@ export default function Classifieds() {
   );
 
   return (
-    <div className="container mx-auto p-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Employee Classifieds</h1>
-        <Button onClick={() => setIsCreateDialogOpen(true)}>
-          <Plus className="mr-2" />
-          Post Classified
-        </Button>
-      </div>
-
-      <div className="flex gap-4 mb-6">
-        <div className="w-1/2">
-          <Tabs defaultValue="all" value={selectedCategory} onValueChange={setSelectedCategory}>
-            <TabsList className="w-full flex-wrap h-auto">
-              {categories.map(category => (
-                <TabsTrigger 
-                  key={category} 
-                  value={category}
-                  className="capitalize"
-                >
-                  {category}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+    <>
+      <div className="container mx-auto p-8 pb-24">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">Employee Classifieds</h1>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="mr-2" />
+            Post Classified
+          </Button>
         </div>
 
-        <div className="w-1/2">
-          <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select location" />
-            </SelectTrigger>
-            <SelectContent>
-              {locations.map(location => (
-                <SelectItem key={location} value={location} className="capitalize">
-                  {location}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="flex gap-4 mb-6">
+          <div className="w-1/2">
+            <Tabs defaultValue="all" value={selectedCategory} onValueChange={setSelectedCategory}>
+              <TabsList className="w-full flex-wrap h-auto">
+                {categories.map(category => (
+                  <TabsTrigger 
+                    key={category} 
+                    value={category}
+                    className="capitalize"
+                  >
+                    {category}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+          </div>
+
+          <div className="w-1/2">
+            <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select location" />
+              </SelectTrigger>
+              <SelectContent>
+                {locations.map(location => (
+                  <SelectItem key={location} value={location} className="capitalize">
+                    {location}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredClassifieds?.map((classified) => (
-          <ClassifiedCard key={classified.id} classified={classified} />
-        ))}
-      </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredClassifieds?.map((classified) => (
+            <ClassifiedCard key={classified.id} classified={classified} />
+          ))}
+        </div>
 
-      <CreateClassifiedDialog
-        open={isCreateDialogOpen}
-        onOpenChange={setIsCreateDialogOpen}
-      />
-    </div>
+        <CreateClassifiedDialog
+          open={isCreateDialogOpen}
+          onOpenChange={setIsCreateDialogOpen}
+        />
+      </div>
+      <BottomNav />
+    </>
   );
 }
