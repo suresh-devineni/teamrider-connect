@@ -4,8 +4,6 @@ import { Toaster } from "@/components/ui/sonner";
 import { TenantProvider } from "@/contexts/TenantContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
 import Index from "./pages/Index";
 import Profile from "./pages/Profile";
 import Map from "./pages/Map";
@@ -20,20 +18,15 @@ const App: React.FC = () => {
       <QueryClientProvider client={queryClient}>
         <TenantProvider>
           <BrowserRouter>
-            <SidebarProvider>
-              <div className="min-h-screen flex w-full">
-                <AppSidebar />
-                <main className="flex-1">
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/map" element={<Map />} />
-                    <Route path="/classifieds" element={<Classifieds />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </main>
-              </div>
-            </SidebarProvider>
+            <main className="min-h-screen w-full">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/map" element={<Map />} />
+                <Route path="/classifieds" element={<Classifieds />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
           </BrowserRouter>
           <Toaster />
         </TenantProvider>
