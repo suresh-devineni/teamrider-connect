@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/lib/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useTenant } from "@/contexts/TenantContext";
 
 interface Classified {
   id: number;
@@ -27,6 +28,7 @@ interface EditClassifiedDialogProps {
 
 export function EditClassifiedDialog({ open, onOpenChange, classified }: EditClassifiedDialogProps) {
   const queryClient = useQueryClient();
+  const { tenant } = useTenant();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: classified.title,
@@ -43,11 +45,17 @@ export function EditClassifiedDialog({ open, onOpenChange, classified }: EditCla
     setIsSubmitting(true);
 
     try {
+      if (!tenant) {
+        toast.error("No tenant context found");
+        return;
+      }
+
       const { error } = await supabase
         .from('classifieds')
         .update({
           ...formData,
           price: parseFloat(formData.price),
+          tenant_id: tenant.id
         })
         .eq('id', classified.id);
 
