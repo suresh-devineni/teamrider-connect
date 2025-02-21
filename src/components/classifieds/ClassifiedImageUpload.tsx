@@ -1,5 +1,6 @@
 
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { ImagePlus } from "lucide-react";
 
 interface ClassifiedImageUploadProps {

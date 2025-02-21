@@ -10,6 +10,7 @@ interface FormData {
   category: string;
   contact_info: string;
   location: string;
+  image_url: string;  // Added this field
 }
 
 interface ClassifiedFormFieldsProps {
