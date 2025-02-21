@@ -68,7 +68,7 @@ export function ClassifiedCard({ classified }: ClassifiedCardProps) {
         )}
         <p className="text-muted-foreground">{classified.description}</p>
         <div className="flex justify-between items-center">
-          <span className="font-bold">${classified.price}</span>
+          <span className="font-bold">₹{classified.price}</span>
           <span className="text-sm text-muted-foreground">
             Posted on {formatDate(classified.created_at)}
           </span>
