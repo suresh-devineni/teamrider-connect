@@ -1,16 +1,13 @@
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { LocationInput } from "@/components/LocationInput";
-import { Label } from "@/components/ui/label";
 import { supabase } from "@/lib/supabase";
 import { Header } from "@/components/Header";
-import { User as UserIcon, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { BottomNav } from "@/components/BottomNav";
-import LocationPreview from "@/components/LocationPreview";
+import { ProfileHeader } from "@/components/profile/ProfileHeader";
+import { LocationFields } from "@/components/profile/LocationFields";
 
 interface Profile {
   id: string;
@@ -133,98 +130,27 @@ const Profile = () => {
       
       <main className="pt-24 px-4 pb-20">
         <Card className="p-6 mb-4">
-          <div className="flex items-center space-x-4 mb-6">
-            <Avatar className="h-16 w-16">
-              {profile?.avatar_url ? (
-                <AvatarImage src={profile.avatar_url} alt={profile.full_name || 'User'} />
-              ) : (
-                <AvatarFallback>
-                  {profile?.full_name ? profile.full_name[0].toUpperCase() : <UserIcon className="h-8 w-8" />}
-                </AvatarFallback>
-              )}
-            </Avatar>
-            <div>
-              <h2 className="text-xl font-semibold">{profile?.full_name || 'Loading...'}</h2>
-              <p className="text-gray-500">{profile?.email}</p>
-            </div>
-          </div>
+          <ProfileHeader
+            fullName={profile?.full_name}
+            email={profile?.email}
+            avatarUrl={profile?.avatar_url}
+          />
 
-          <div className="space-y-6">
-            <div>
-              <Label htmlFor="home-location">Home Location</Label>
-              <div className="mt-1 relative">
-                <LocationInput
-                  id="home-location"
-                  value={profile?.home_location || ''}
-                  onChange={(location, lat, lng) => handleLocationChange('home', location, lat, lng)}
-                  placeholder="Enter your home location"
-                  required={false}
-                />
-                {profile?.home_location && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-2 top-1/2 -translate-y-1/2"
-                    onClick={() => handleClearLocation('home')}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="office-location">Office Location</Label>
-              <div className="mt-1 relative">
-                <LocationInput
-                  id="office-location"
-                  value={profile?.office_location || ''}
-                  onChange={(location, lat, lng) => handleLocationChange('office', location, lat, lng)}
-                  placeholder="Enter your office location"
-                  required={false}
-                />
-                {profile?.office_location && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-2 top-1/2 -translate-y-1/2"
-                    onClick={() => handleClearLocation('office')}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            </div>
-            
-            {isUpdating && (
-              <div className="flex items-center justify-center">
-                <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
-              </div>
-            )}
-
-            {(profile?.home_latitude || profile?.office_latitude) && (
-              <LocationPreview
-                homeLocation={
-                  profile.home_latitude
-                    ? {
-                        lat: profile.home_latitude,
-                        lng: profile.home_longitude!,
-                        label: 'Home'
-                      }
-                    : undefined
-                }
-                officeLocation={
-                  profile.office_latitude
-                    ? {
-                        lat: profile.office_latitude,
-                        lng: profile.office_longitude!,
-                        label: 'Office'
-                      }
-                    : undefined
-                }
-              />
-            )}
-          </div>
+          <LocationFields
+            homeLocation={{
+              location: profile?.home_location,
+              latitude: profile?.home_latitude,
+              longitude: profile?.home_longitude,
+            }}
+            officeLocation={{
+              location: profile?.office_location,
+              latitude: profile?.office_latitude,
+              longitude: profile?.office_longitude,
+            }}
+            isUpdating={isUpdating}
+            onLocationChange={handleLocationChange}
+            onClearLocation={handleClearLocation}
+          />
         </Card>
       </main>
 
