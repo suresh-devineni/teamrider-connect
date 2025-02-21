@@ -34,21 +34,23 @@ interface CreateClassifiedDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const initialFormData = {
+  title: "",
+  description: "",
+  price: "",
+  category: "",
+  contact_info: "",
+  image_url: "",
+  location: "",
+};
+
 export function CreateClassifiedDialog({ open, onOpenChange }: CreateClassifiedDialogProps) {
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    price: "",
-    category: "",
-    contact_info: "",
-    image_url: "",
-    location: "", // Added location field
-  });
+  const [formData, setFormData] = useState(initialFormData);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -113,14 +115,7 @@ export function CreateClassifiedDialog({ open, onOpenChange }: CreateClassifiedD
       toast.success("Classified created successfully");
       queryClient.invalidateQueries({ queryKey: ['classifieds'] });
       onOpenChange(false);
-      setFormData({
-        title: "",
-        description: "",
-        price: "",
-        category: "",
-        contact_info: "",
-        image_url: "",
-      });
+      setFormData(initialFormData); // Using the initialFormData constant
       setImageFile(null);
       setImagePreview(null);
     } catch (error) {
