@@ -20,6 +20,9 @@ interface Profile {
   home_location?: string;
   home_latitude?: number;
   home_longitude?: number;
+  office_location?: string;
+  office_latitude?: number;
+  office_longitude?: number;
 }
 
 const Profile = () => {
@@ -72,33 +75,44 @@ const Profile = () => {
     fetchProfile();
   }, [navigate]);
 
-  const handleLocationChange = async (location: string, lat?: number, lng?: number) => {
+  const handleLocationChange = async (
+    locationType: 'home' | 'office',
+    location: string,
+    lat?: number,
+    lng?: number
+  ) => {
     if (!profile) return;
 
     setIsUpdating(true);
     try {
+      const updateData = locationType === 'home' 
+        ? {
+            home_location: location,
+            home_latitude: lat,
+            home_longitude: lng
+          }
+        : {
+            office_location: location,
+            office_latitude: lat,
+            office_longitude: lng
+          };
+
       const { error } = await supabase
         .from('profiles')
-        .update({
-          home_location: location,
-          home_latitude: lat,
-          home_longitude: lng
-        })
+        .update(updateData)
         .eq('id', profile.id);
 
       if (error) throw error;
 
       setProfile(prev => prev ? {
         ...prev,
-        home_location: location,
-        home_latitude: lat,
-        home_longitude: lng
+        ...updateData
       } : null);
 
-      toast.success('Home location updated successfully');
+      toast.success(`${locationType === 'home' ? 'Home' : 'Office'} location updated successfully`);
     } catch (error) {
-      console.error('Error updating home location:', error);
-      toast.error('Failed to update home location');
+      console.error(`Error updating ${locationType} location:`, error);
+      toast.error(`Failed to update ${locationType} location`);
     } finally {
       setIsUpdating(false);
     }
@@ -126,24 +140,38 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
               <Label htmlFor="home-location">Home Location</Label>
               <div className="mt-1">
                 <LocationInput
                   id="home-location"
                   value={profile?.home_location || ''}
-                  onChange={handleLocationChange}
+                  onChange={(location, lat, lng) => handleLocationChange('home', location, lat, lng)}
                   placeholder="Enter your home location"
                   required={false}
                 />
               </div>
-              {isUpdating && (
-                <div className="flex items-center justify-center mt-2">
-                  <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
-                </div>
-              )}
             </div>
+
+            <div>
+              <Label htmlFor="office-location">Office Location</Label>
+              <div className="mt-1">
+                <LocationInput
+                  id="office-location"
+                  value={profile?.office_location || ''}
+                  onChange={(location, lat, lng) => handleLocationChange('office', location, lat, lng)}
+                  placeholder="Enter your office location"
+                  required={false}
+                />
+              </div>
+            </div>
+            
+            {isUpdating && (
+              <div className="flex items-center justify-center">
+                <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+              </div>
+            )}
           </div>
         </Card>
       </main>

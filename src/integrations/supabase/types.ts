@@ -91,6 +91,9 @@ export type Database = {
           home_location: string | null
           home_longitude: number | null
           id: string
+          office_latitude: number | null
+          office_location: string | null
+          office_longitude: number | null
           updated_at: string | null
         }
         Insert: {
@@ -102,6 +105,9 @@ export type Database = {
           home_location?: string | null
           home_longitude?: number | null
           id: string
+          office_latitude?: number | null
+          office_location?: string | null
+          office_longitude?: number | null
           updated_at?: string | null
         }
         Update: {
@@ -113,6 +119,9 @@ export type Database = {
           home_location?: string | null
           home_longitude?: number | null
           id?: string
+          office_latitude?: number | null
+          office_location?: string | null
+          office_longitude?: number | null
           updated_at?: string | null
         }
         Relationships: []
