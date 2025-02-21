@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { CarTaxiFront, UserPlus, MapPin } from "lucide-react";
+import { CarTaxiFront, UserPlus, MapPin, Tag } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export const BottomNav = () => {
@@ -32,6 +32,14 @@ export const BottomNav = () => {
       >
         <MapPin className="h-5 w-5" />
         <span className="text-xs">Map</span>
+      </Button>
+      <Button 
+        variant={location.pathname === "/classifieds" ? "default" : "ghost"} 
+        className="flex flex-col items-center gap-1"
+        onClick={() => navigate("/classifieds")}
+      >
+        <Tag className="h-5 w-5" />
+        <span className="text-xs">Classifieds</span>
       </Button>
     </nav>
   );
