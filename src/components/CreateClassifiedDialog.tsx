@@ -65,7 +65,7 @@ export function CreateClassifiedDialog({ open, onOpenChange }: CreateClassifiedD
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${crypto.randomUUID()}.${fileExt}`;
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('classifieds')
         .upload(fileName, file);
 
