@@ -4,9 +4,28 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/lib/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+
+const CLASSIFIED_CATEGORIES = [
+  "Electronics",
+  "Furniture",
+  "Vehicles",
+  "Books",
+  "Sports & Fitness",
+  "Home & Garden",
+  "Clothing",
+  "Musical Instruments",
+  "Collectibles",
+  "Free Stuff",
+  "Pets & Pet Supplies",
+  "Tools",
+  "Games & Toys",
+  "Appliances",
+  "Other"
+] as const;
 
 interface CreateClassifiedDialogProps {
   open: boolean;
@@ -104,12 +123,22 @@ export function CreateClassifiedDialog({ open, onOpenChange }: CreateClassifiedD
           </div>
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
-            <Input
-              id="category"
+            <Select 
               value={formData.category}
-              onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
               required
-            />
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                {CLASSIFIED_CATEGORIES.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="contact_info">Contact Information</Label>
