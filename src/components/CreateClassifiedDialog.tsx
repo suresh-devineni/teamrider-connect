@@ -2,13 +2,12 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/lib/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ImagePlus, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { ClassifiedFormFields } from "./classifieds/ClassifiedFormFields";
+import { ClassifiedImageUpload } from "./classifieds/ClassifiedImageUpload";
 
 const CLASSIFIED_CATEGORIES = [
   "Electronics",
@@ -115,7 +114,7 @@ export function CreateClassifiedDialog({ open, onOpenChange }: CreateClassifiedD
       toast.success("Classified created successfully");
       queryClient.invalidateQueries({ queryKey: ['classifieds'] });
       onOpenChange(false);
-      setFormData(initialFormData); // Using the initialFormData constant
+      setFormData(initialFormData);
       setImageFile(null);
       setImagePreview(null);
     } catch (error) {
@@ -133,119 +132,21 @@ export function CreateClassifiedDialog({ open, onOpenChange }: CreateClassifiedD
           <DialogTitle>Create New Classified</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Input
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="price">Price (₹)</Label>
-            <Input
-              id="price"
-              type="number"
-              step="0.01"
-              min="0"
-              value={formData.price}
-              onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
-            <Input
-              id="location"
-              value={formData.location}
-              onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-              placeholder="Enter location"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
-            <Select 
-              value={formData.category}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
-              required
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a category" />
-              </SelectTrigger>
-              <SelectContent>
-                {CLASSIFIED_CATEGORIES.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="contact_info">Contact Information</Label>
-            <Input
-              id="contact_info"
-              value={formData.contact_info}
-              onChange={(e) => setFormData(prev => ({ ...prev, contact_info: e.target.value }))}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="image">Image</Label>
-            <div className="flex flex-col items-center gap-4">
-              {imagePreview ? (
-                <div className="relative w-full">
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="w-full h-48 object-cover rounded-md"
-                  />
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    className="absolute top-2 right-2"
-                    onClick={() => {
-                      setImageFile(null);
-                      setImagePreview(null);
-                    }}
-                  >
-                    Change
-                  </Button>
-                </div>
-              ) : (
-                <div className="w-full">
-                  <label
-                    htmlFor="image-upload"
-                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:border-primary"
-                  >
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <ImagePlus className="w-8 h-8 mb-2 text-gray-500" />
-                      <p className="text-sm text-gray-500">Click to upload image</p>
-                    </div>
-                    <input
-                      id="image-upload"
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleImageChange}
-                    />
-                  </label>
-                </div>
-              )}
-            </div>
-          </div>
+          <ClassifiedFormFields
+            formData={formData}
+            setFormData={setFormData}
+            categories={CLASSIFIED_CATEGORIES}
+          />
+          
+          <ClassifiedImageUpload
+            imagePreview={imagePreview}
+            onImageChange={handleImageChange}
+            onImageRemove={() => {
+              setImageFile(null);
+              setImagePreview(null);
+            }}
+          />
+
           <Button 
             type="submit" 
             className="w-full" 
