@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ClassifiedCard } from "@/components/ClassifiedCard";
 import { CreateClassifiedDialog } from "@/components/CreateClassifiedDialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
@@ -26,6 +27,7 @@ interface Classified {
 export default function Classifieds() {
   const navigate = useNavigate();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const { data: classifieds, isLoading, error } = useQuery({
     queryKey: ['classifieds'],
@@ -59,6 +61,16 @@ export default function Classifieds() {
     return <div className="p-8">Error loading classifieds</div>;
   }
 
+  // Get unique categories from classifieds
+  const categories = classifieds 
+    ? ['all', ...new Set(classifieds.map(c => c.category))]
+    : ['all'];
+
+  // Filter classifieds by selected category
+  const filteredClassifieds = classifieds?.filter(classified => 
+    selectedCategory === 'all' || classified.category === selectedCategory
+  );
+
   return (
     <div className="container mx-auto p-8">
       <div className="flex justify-between items-center mb-8">
@@ -69,11 +81,29 @@ export default function Classifieds() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {classifieds?.map((classified) => (
-          <ClassifiedCard key={classified.id} classified={classified} />
+      <Tabs defaultValue="all" className="w-full mb-6" onValueChange={setSelectedCategory}>
+        <TabsList className="w-full flex-wrap h-auto">
+          {categories.map(category => (
+            <TabsTrigger 
+              key={category} 
+              value={category}
+              className="capitalize"
+            >
+              {category}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        {categories.map(category => (
+          <TabsContent key={category} value={category}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredClassifieds?.map((classified) => (
+                <ClassifiedCard key={classified.id} classified={classified} />
+              ))}
+            </div>
+          </TabsContent>
         ))}
-      </div>
+      </Tabs>
 
       <CreateClassifiedDialog
         open={isCreateDialogOpen}
