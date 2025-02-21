@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/lib/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { ImagePlus, Loader2 } from "lucide-react";
 
 const CLASSIFIED_CATEGORIES = [
   "Electronics",
@@ -36,6 +37,9 @@ interface CreateClassifiedDialogProps {
 export function CreateClassifiedDialog({ open, onOpenChange }: CreateClassifiedDialogProps) {
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -44,6 +48,39 @@ export function CreateClassifiedDialog({ open, onOpenChange }: CreateClassifiedD
     contact_info: "",
     image_url: "",
   });
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+    }
+  };
+
+  const uploadImage = async (file: File): Promise<string> => {
+    setIsUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      const { error: uploadError, data } = await supabase.storage
+        .from('classifieds')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('classifieds')
+        .getPublicUrl(fileName);
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      throw new Error('Failed to upload image');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,12 +93,18 @@ export function CreateClassifiedDialog({ open, onOpenChange }: CreateClassifiedD
         return;
       }
 
+      let imageUrl = "";
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile);
+      }
+
       const { error } = await supabase
         .from('classifieds')
         .insert({
           ...formData,
           price: parseFloat(formData.price),
           user_id: user.id,
+          image_url: imageUrl,
         });
 
       if (error) throw error;
@@ -77,6 +120,8 @@ export function CreateClassifiedDialog({ open, onOpenChange }: CreateClassifiedD
         contact_info: "",
         image_url: "",
       });
+      setImageFile(null);
+      setImagePreview(null);
     } catch (error) {
       console.error('Error creating classified:', error);
       toast.error("Failed to create classified");
@@ -151,14 +196,58 @@ export function CreateClassifiedDialog({ open, onOpenChange }: CreateClassifiedD
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="image_url">Image URL (optional)</Label>
-            <Input
-              id="image_url"
-              value={formData.image_url}
-              onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
-            />
+            <Label htmlFor="image">Image</Label>
+            <div className="flex flex-col items-center gap-4">
+              {imagePreview ? (
+                <div className="relative w-full">
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="w-full h-48 object-cover rounded-md"
+                  />
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={() => {
+                      setImageFile(null);
+                      setImagePreview(null);
+                    }}
+                  >
+                    Change
+                  </Button>
+                </div>
+              ) : (
+                <div className="w-full">
+                  <label
+                    htmlFor="image-upload"
+                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:border-primary"
+                  >
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <ImagePlus className="w-8 h-8 mb-2 text-gray-500" />
+                      <p className="text-sm text-gray-500">Click to upload image</p>
+                    </div>
+                    <input
+                      id="image-upload"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageChange}
+                    />
+                  </label>
+                </div>
+              )}
+            </div>
           </div>
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button 
+            type="submit" 
+            className="w-full" 
+            disabled={isSubmitting || isUploading}
+          >
+            {(isSubmitting || isUploading) && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
             {isSubmitting ? "Creating..." : "Create Classified"}
           </Button>
         </form>
