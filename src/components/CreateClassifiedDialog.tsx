@@ -47,6 +47,7 @@ export function CreateClassifiedDialog({ open, onOpenChange }: CreateClassifiedD
     category: "",
     contact_info: "",
     image_url: "",
+    location: "", // Added location field
   });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -164,6 +165,16 @@ export function CreateClassifiedDialog({ open, onOpenChange }: CreateClassifiedD
               min="0"
               value={formData.price}
               onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="location">Location</Label>
+            <Input
+              id="location"
+              value={formData.location}
+              onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+              placeholder="Enter location"
               required
             />
           </div>

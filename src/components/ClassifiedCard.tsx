@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,6 +17,7 @@ interface Classified {
   user_id: string;
   contact_info: string;
   image_url?: string;
+  location: string;
 }
 
 interface ClassifiedCardProps {
@@ -75,6 +75,7 @@ export function ClassifiedCard({ classified }: ClassifiedCardProps) {
         </div>
         <div className="text-sm">
           <p>Category: {classified.category}</p>
+          <p>Location: {classified.location}</p>
           <p>Contact: {classified.contact_info}</p>
           <p>Status: {classified.status}</p>
         </div>
