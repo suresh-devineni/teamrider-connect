@@ -10,18 +10,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { LogOut, Settings, User } from "lucide-react";
-import { supabase } from "@/lib/supabase";
-import { toast } from "sonner";
+import { Settings, User } from "lucide-react";
 
 export function AppSidebar() {
   const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/");
-    toast.success("Logged out successfully");
-  };
 
   return (
     <Sidebar>
@@ -43,14 +35,6 @@ export function AppSidebar() {
                   <div className="flex items-center">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
-                  </div>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild onClick={handleLogout}>
-                  <div className="flex items-center text-red-600">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Logout</span>
                   </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>
