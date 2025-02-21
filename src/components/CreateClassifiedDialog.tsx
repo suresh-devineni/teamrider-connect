@@ -24,6 +24,7 @@ const CLASSIFIED_CATEGORIES = [
   "Tools",
   "Games & Toys",
   "Appliances",
+  "Real Estate",
   "Other"
 ] as const;
 
