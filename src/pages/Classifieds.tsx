@@ -14,6 +14,7 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { BottomNav } from "@/components/BottomNav";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTenant } from "@/contexts/TenantContext";
 
 interface Classified {
   id: number;
@@ -35,6 +36,7 @@ const ITEMS_PER_PAGE = 9;
 
 export default function Classifieds() {
   const navigate = useNavigate();
+  const { tenant, isLoading: isTenantLoading } = useTenant();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedLocation, setSelectedLocation] = useState<string>("all");
@@ -43,11 +45,14 @@ export default function Classifieds() {
   const [sortBy, setSortBy] = useState<SortOption>('newest');
 
   const { data: classifieds, isLoading, error } = useQuery({
-    queryKey: ['classifieds'],
+    queryKey: ['classifieds', tenant?.id],
     queryFn: async () => {
+      if (!tenant) return [];
+      
       let query = supabase
         .from('classifieds')
-        .select('*');
+        .select('*')
+        .eq('tenant_id', tenant.id);
 
       if (sortBy === 'newest') {
         query = query.order('created_at', { ascending: false });
@@ -63,7 +68,8 @@ export default function Classifieds() {
       
       if (error) throw error;
       return data as Classified[];
-    }
+    },
+    enabled: !!tenant
   });
 
   useEffect(() => {
@@ -118,7 +124,9 @@ export default function Classifieds() {
     <>
       <div className="container mx-auto p-8 pb-24">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Employee Classifieds</h1>
+          <h1 className="text-3xl font-bold">
+            {tenant?.name ? `${tenant.name} Classifieds` : 'Employee Classifieds'}
+          </h1>
           <Button onClick={() => setIsCreateDialogOpen(true)}>
             <Plus className="mr-2" />
             Post Classified
@@ -204,7 +212,7 @@ export default function Classifieds() {
           )}
         </div>
 
-        {isLoading ? (
+        {isLoading || isTenantLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
               <Card key={i} className="p-4">
