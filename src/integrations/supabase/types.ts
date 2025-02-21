@@ -20,6 +20,7 @@ export type Database = {
           location: string
           price: number
           status: Database["public"]["Enums"]["classified_status"] | null
+          tenant_id: string
           title: string
           updated_at: string
           user_id: string
@@ -34,6 +35,7 @@ export type Database = {
           location?: string
           price: number
           status?: Database["public"]["Enums"]["classified_status"] | null
+          tenant_id: string
           title: string
           updated_at?: string
           user_id: string
@@ -48,11 +50,20 @@ export type Database = {
           location?: string
           price?: number
           status?: Database["public"]["Enums"]["classified_status"] | null
+          tenant_id?: string
           title?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "classifieds_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       messages: {
         Row: {
@@ -62,6 +73,7 @@ export type Database = {
           ride_id: number
           sender_id: string
           sender_name: string
+          tenant_id: string
         }
         Insert: {
           content: string
@@ -70,6 +82,7 @@ export type Database = {
           ride_id: number
           sender_id: string
           sender_name: string
+          tenant_id: string
         }
         Update: {
           content?: string
@@ -78,8 +91,17 @@ export type Database = {
           ride_id?: number
           sender_id?: string
           sender_name?: string
+          tenant_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "messages_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -94,6 +116,8 @@ export type Database = {
           office_latitude: number | null
           office_location: string | null
           office_longitude: number | null
+          tenant_id: string
+          tenant_role: string | null
           updated_at: string | null
         }
         Insert: {
@@ -108,6 +132,8 @@ export type Database = {
           office_latitude?: number | null
           office_location?: string | null
           office_longitude?: number | null
+          tenant_id: string
+          tenant_role?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -122,9 +148,19 @@ export type Database = {
           office_latitude?: number | null
           office_location?: string | null
           office_longitude?: number | null
+          tenant_id?: string
+          tenant_role?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ride_requests: {
         Row: {
@@ -138,6 +174,7 @@ export type Database = {
           ride_id: number
           seats_requested: number
           status: string
+          tenant_id: string
           updated_at: string
         }
         Insert: {
@@ -151,6 +188,7 @@ export type Database = {
           ride_id: number
           seats_requested?: number
           status?: string
+          tenant_id: string
           updated_at?: string
         }
         Update: {
@@ -164,9 +202,18 @@ export type Database = {
           ride_id?: number
           seats_requested?: number
           status?: string
+          tenant_id?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ride_requests_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       rides: {
         Row: {
@@ -185,6 +232,7 @@ export type Database = {
           recurring_until: string | null
           ride_status: string
           seats_available: number
+          tenant_id: string
           to_latitude: number | null
           to_location: string
           to_longitude: number | null
@@ -206,6 +254,7 @@ export type Database = {
           recurring_until?: string | null
           ride_status?: string
           seats_available: number
+          tenant_id: string
           to_latitude?: number | null
           to_location: string
           to_longitude?: number | null
@@ -227,9 +276,39 @@ export type Database = {
           recurring_until?: string | null
           ride_status?: string
           seats_available?: number
+          tenant_id?: string
           to_latitude?: number | null
           to_location?: string
           to_longitude?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rides_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenants: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
           updated_at?: string
         }
         Relationships: []
@@ -278,6 +357,10 @@ export type Database = {
         Args: {
           secret_name: string
         }
+        Returns: string
+      }
+      get_user_tenant_id: {
+        Args: Record<PropertyKey, never>
         Returns: string
       }
     }
