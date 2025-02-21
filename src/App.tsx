@@ -10,6 +10,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import Index from "./pages/Index";
 import Profile from "./pages/Profile";
 import Map from "./pages/Map";
+import Classifieds from "./pages/Classifieds";
 import NotFound from "./pages/NotFound";
 
 // Create a client
@@ -38,6 +39,7 @@ const App: React.FC = () => {
                     <Route path="/" element={<Index />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/map" element={<Map />} />
+                    <Route path="/classifieds" element={<Classifieds />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </main>
