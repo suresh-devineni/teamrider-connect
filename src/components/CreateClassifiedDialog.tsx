@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { ClassifiedFormFields } from "./classifieds/ClassifiedFormFields";
 import { ClassifiedImageUpload } from "./classifieds/ClassifiedImageUpload";
+import { useTenant } from "@/contexts/TenantContext";
 
 const CLASSIFIED_CATEGORIES = [
   "Electronics",
@@ -45,6 +45,7 @@ const initialFormData = {
 
 export function CreateClassifiedDialog({ open, onOpenChange }: CreateClassifiedDialogProps) {
   const queryClient = useQueryClient();
+  const { tenant } = useTenant();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -95,6 +96,11 @@ export function CreateClassifiedDialog({ open, onOpenChange }: CreateClassifiedD
         return;
       }
 
+      if (!tenant) {
+        toast.error("No tenant context found");
+        return;
+      }
+
       let imageUrl = "";
       if (imageFile) {
         imageUrl = await uploadImage(imageFile);
@@ -106,6 +112,7 @@ export function CreateClassifiedDialog({ open, onOpenChange }: CreateClassifiedD
           ...formData,
           price: parseFloat(formData.price),
           user_id: user.id,
+          tenant_id: tenant.id,
           image_url: imageUrl,
         });
 

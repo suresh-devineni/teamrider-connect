@@ -1,8 +1,6 @@
-
 import React from "react";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/sonner";
+import { TenantProvider } from "@/contexts/TenantContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -13,23 +11,13 @@ import Map from "./pages/Map";
 import Classifieds from "./pages/Classifieds";
 import NotFound from "./pages/NotFound";
 
-// Create a client
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: 1,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 const App: React.FC = () => {
   return (
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
+        <TenantProvider>
           <BrowserRouter>
             <SidebarProvider>
               <div className="min-h-screen flex w-full">
@@ -46,7 +34,8 @@ const App: React.FC = () => {
               </div>
             </SidebarProvider>
           </BrowserRouter>
-        </TooltipProvider>
+          <Toaster />
+        </TenantProvider>
       </QueryClientProvider>
     </React.StrictMode>
   );
