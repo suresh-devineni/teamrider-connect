@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, User as UserIcon } from "lucide-react";
+import { User as UserIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -98,12 +98,6 @@ export const Header = () => {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setProfile(null);
-    navigate("/");
-  };
-
   return (
     <header className="px-4 py-6 bg-white/80 backdrop-blur-lg border-b border-gray-100 fixed top-0 left-0 right-0 z-50">
       <div className="flex justify-between items-start">
@@ -136,13 +130,6 @@ export const Header = () => {
                   <span className="font-medium">{profile?.full_name}</span>
                   <span className="text-sm text-gray-500">{profile?.email}</span>
                 </div>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="text-red-600 cursor-pointer"
-                onClick={handleLogout}
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
